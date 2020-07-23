@@ -19,17 +19,20 @@ def decom_vgg16():
     else:
         model = vgg16(not opt.load_path)
 
+    #前30层是特征提取层, 13个卷积+4个pooling,不包含最后一个pooling，也就是outputstride=16
     features = list(model.features)[:30]
     classifier = model.classifier
 
     classifier = list(classifier)
+    #删除最终的分类层（imagenet，分类数1000）
     del classifier[6]
     if not opt.use_drop:
+        #删除drop out层
         del classifier[5]
         del classifier[2]
     classifier = nn.Sequential(*classifier)
 
-    # freeze top4 conv
+    # freeze top4 conv, 也就是最前面两个block(2层卷积的)
     for layer in features[:10]:
         for p in layer.parameters():
             p.requires_grad = False
