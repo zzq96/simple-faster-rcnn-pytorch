@@ -412,6 +412,7 @@ class ProposalCreator:
         # Take top pre_nms_topN (e.g. 6000).
         order = score.ravel().argsort()[::-1]
         if n_pre_nms > 0:
+            #如果n_pre_nms超出了size，就等价于size
             order = order[:n_pre_nms]
         roi = roi[order, :]
         score = score[order]

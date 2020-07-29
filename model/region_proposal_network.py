@@ -106,10 +106,13 @@ class RegionProposalNetwork(nn.Module):
         n_anchor = anchor.shape[0] // (hh * ww)
         h = F.relu(self.conv1(x))
 
+        #(-, n_anchor*4, hh, ww)
         rpn_locs = self.loc(h)
         # UNNOTE: check whether need contiguous
         # A: Yes
         rpn_locs = rpn_locs.permute(0, 2, 3, 1).contiguous().view(n, -1, 4)
+
+        #(-, n_anchor*2, hh, ww)
         rpn_scores = self.score(h)
         rpn_scores = rpn_scores.permute(0, 2, 3, 1).contiguous()
         rpn_softmax_scores = F.softmax(rpn_scores.view(n, hh, ww, n_anchor, 2), dim=4)
@@ -118,8 +121,10 @@ class RegionProposalNetwork(nn.Module):
         rpn_scores = rpn_scores.view(n, -1, 2)
 
         rois = list()
+        #遍历batch中的每一张图片
         roi_indices = list()
         for i in range(n):
+            #经过clip,nms之后选出的前几个anchor
             roi = self.proposal_layer(
                 rpn_locs[i].cpu().data.numpy(),
                 rpn_fg_scores[i].cpu().data.numpy(),
@@ -129,6 +134,7 @@ class RegionProposalNetwork(nn.Module):
             rois.append(roi)
             roi_indices.append(batch_index)
 
+        #把batch的合在一起
         rois = np.concatenate(rois, axis=0)
         roi_indices = np.concatenate(roi_indices, axis=0)
         return rpn_locs, rpn_scores, rois, roi_indices, anchor
