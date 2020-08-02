@@ -143,7 +143,7 @@ class VGG16RoIHead(nn.Module):
         xy_indices_and_rois = indices_and_rois[:, [0, 2, 1, 4, 3]]
         indices_and_rois =  xy_indices_and_rois.contiguous()
 
-        pool = self.roi(x, indices_and_rois)
+        pool = self.roi(x, indices_and_rois)#(k, c, h, w)
         pool = pool.view(pool.size(0), -1)
         fc7 = self.classifier(pool)
         roi_cls_locs = self.cls_loc(fc7)

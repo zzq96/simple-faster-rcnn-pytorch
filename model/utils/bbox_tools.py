@@ -226,11 +226,13 @@ def generate_anchor_base(base_size=16, ratios=[0.5, 1, 2],
         :math:`(y_{min}, x_{min}, y_{max}, x_{max})` of a bounding box.
 
     """
+    #为啥中心是这个？
     py = base_size / 2.
     px = base_size / 2.
 
     anchor_base = np.zeros((len(ratios) * len(anchor_scales), 4),
                            dtype=np.float32)
+    #six是python2,3兼容性库，也就是可以同时在2，3中使用
     for i in six.moves.range(len(ratios)):
         for j in six.moves.range(len(anchor_scales)):
             h = base_size * anchor_scales[j] * np.sqrt(ratios[i])
