@@ -30,7 +30,7 @@ def decom_vgg16():
         #删除drop out层
         del classifier[5]
         del classifier[2]
-    classifier = nn.Sequential(*classifier
+    classifier = nn.Sequential(*classifier)
 
     # freeze top4 conv, 也就是最前面两个block(2层卷积的)
     for layer in features[:10]:
